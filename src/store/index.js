@@ -4,6 +4,8 @@ import axios from 'axios'
 
 Vue.use(Vuex)
 
+axios.defaults.headers.common.Authorization = `Bearer ${localStorage.getItem('token')}`
+
 export default new Vuex.Store({
   state: {
     count: 1,
