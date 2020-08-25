@@ -4,7 +4,7 @@ import axios from 'axios'
 
 Vue.use(Vuex)
 
-axios.defaults.headers.common.Authorization = `Bearer ${localStorage.getItem('token')}`
+// axios.defaults.headers.common.Authorization = `Bearer ${localStorage.getItem('token')}`
 
 export default new Vuex.Store({
   state: {
@@ -69,7 +69,8 @@ export default new Vuex.Store({
             console.log(res)
             setex.commit('setUser', res.data.result)
             localStorage.setItem('token', res.data.result.token)
-            axios.defaults.headers.common.Authorization = `Bearer ${res.data.result.token}`
+            // axios.defaults.headers.common.Authorization = `Bearer ${res.data.result.token}`
+            setex.dispatch('interceptorsRequest')
             resolve(res.data.result[0])
           })
           .catch((err) => {
