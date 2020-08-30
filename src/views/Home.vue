@@ -10,6 +10,8 @@
     <ul>
       <li v-for="book in books" :key="book.id">{{book.title}}</li>
     </ul>
+
+    <input type="file" name="image" id="image">
   </div>
 </template>
 

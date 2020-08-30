@@ -17,11 +17,12 @@ import { mapActions } from 'vuex'
 export default {
   name: 'App',
   methods: {
-    ...mapActions(['interceptorsRequest'])
+    ...mapActions(['interceptorsRequest', 'interceptorsResponse'])
   },
-  mounted () {
+  created () {
     console.log('hello')
-    // this.interceptorsRequest()
+    this.interceptorsRequest()
+    this.interceptorsResponse()
   }
 }
 </script>

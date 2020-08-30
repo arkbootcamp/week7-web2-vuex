@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import axios from 'axios'
+import router from '../router/index'
 
 Vue.use(Vuex)
 
@@ -29,48 +30,63 @@ export default new Vuex.Store({
       state.user = payload
       state.token = payload.token
     },
+    setToken (state, payload) {
+      state.token = payload
+    },
     setBooks (state, payload) {
       // console.log(payload)
       state.books = payload
     }
   },
   actions: {
-    getTodos (setex) {
+    getTodos (context) {
       axios.get('https://jsonplaceholder.typicode.com/todos')
         .then((res) => {
-          setex.commit('setTodos', res.data)
+          context.commit('setTodos', res.data)
         })
     },
-    interceptorsResponse () {
+    interceptorsResponse (context) {
       axios.interceptors.response.use(function (response) {
         return response
       }, function (error) {
-        console.log(error)
+        console.log(error.response.data.result.message)
+        if (error.response.status === 401) {
+          if (error.response.data.result.message === 'Token Invalid') {
+            context.commit('setToken', null)
+            localStorage.removeItem('token')
+            router.push('/login')
+            alert('maaf anda tidak boleh merubah token dengan sendirinya')
+          } else if (error.response.data.result.message === 'Token Expired') {
+            context.commit('setToken', null)
+            localStorage.removeItem('token')
+            router.push('/login')
+            alert('maaf session habis silahkan login kembali')
+          }
+        }
         return Promise.reject(error)
       })
     },
-    interceptorsRequest (setex) {
-      console.log('interse')
+    interceptorsRequest (context) {
       axios.interceptors.request.use(function (config) {
         // Do something before request is sent
-        config.headers.Authorization = `Bearer ${setex.state.token}`
+        config.headers.Authorization = `Bearer ${context.state.token}`
         return config
       }, function (error) {
         // Do something with request error
         return Promise.reject(error)
       })
     },
-    login (setex, payload) {
+    login (context, payload) {
       console.log(payload)
       // console.log(payload)
       return new Promise((resolve, reject) => {
         axios.post('http://localhost:4017/api/v1/users/login', payload)
           .then((res) => {
             console.log(res)
-            setex.commit('setUser', res.data.result)
+            context.commit('setUser', res.data.result)
             localStorage.setItem('token', res.data.result.token)
             // axios.defaults.headers.common.Authorization = `Bearer ${res.data.result.token}`
-            setex.dispatch('interceptorsRequest')
+            context.dispatch('interceptorsRequest')
             resolve(res.data.result[0])
           })
           .catch((err) => {
@@ -79,12 +95,12 @@ export default new Vuex.Store({
           })
       })
     },
-    getBooks (setex) {
+    getBooks (context) {
       return new Promise((resolve, reject) => {
         axios.get('http://localhost:4017/api/v1/books')
           .then((res) => {
             // console.log(res)
-            setex.commit('setBooks', res.data.result)
+            context.commit('setBooks', res.data.result)
             resolve(res.data.result)
           })
           .reject((err) => {
