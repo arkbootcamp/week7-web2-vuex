@@ -3,6 +3,7 @@ import VueRouter from 'vue-router'
 import Home from '../views/Home.vue'
 import Login from '../views/auth/login/Login.vue'
 import Register from '../views/auth/register/Register.vue'
+import Product from '../views/main/product/index.vue'
 import store from '../store/index'
 
 Vue.use(VueRouter)
@@ -33,6 +34,12 @@ const routes = [
     name: 'Login',
     component: Login,
     meta: { requiresVisitor: true }
+  },
+  {
+    path: '/product',
+    name: 'Product',
+    component: Product,
+    meta: { requiresAuth: true }
   }
 ]
 

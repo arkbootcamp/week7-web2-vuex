@@ -11,14 +11,15 @@
       <li v-for="book in books" :key="book.id">{{book.title}}</li>
     </ul>
 
-    <input type="file" name="image" id="image">
+    <input type="file" @change="uploadFile" name="image" id="image" ref="input">
+    <button @click="handleUpdate">kirim</button>
   </div>
 </template>
 
 <script>
 // @ is an alias to /src
 // import HelloWorld from '@/components/HelloWorld.vue'
-
+import axios from 'axios'
 import { mapActions, mapGetters } from 'vuex'
 
 export default {
@@ -29,7 +30,14 @@ export default {
   data () {
     return {
       username: '',
-      password: ''
+      password: '',
+      title: 'hello ini coba patch saja',
+      description: 'coba patch',
+      image: null,
+      status: 1,
+      idCategory: 1,
+      author: 'risano',
+      id: 1
     }
   },
   methods: {
@@ -39,6 +47,27 @@ export default {
         password: this.passowrd
       }
       this.login(data)
+    },
+    uploadFile (e) {
+      console.log(this.$refs)
+      console.log(e.target.files[0])
+      this.image = e.target.files[0]
+    },
+    handleUpdate () {
+      const fd = new FormData()
+      fd.append('title', this.title)
+      fd.append('description', this.description)
+      fd.append('image', this.image)
+      fd.append('status', this.status)
+      fd.append('idCategory', this.idCategory)
+      fd.append('author', this.author)
+      axios.patch(`http://localhost:4017/api/v1/books/${this.id}`, fd)
+        .then(() => {
+          alert('berhasil')
+        })
+        .catch((err) => {
+          console.log(err)
+        })
     },
     setPlush () {
       // console.log('set')

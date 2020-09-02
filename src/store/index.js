@@ -14,7 +14,8 @@ export default new Vuex.Store({
     todos: [],
     user: {},
     token: localStorage.getItem('token') || null,
-    books: []
+    books: [],
+    products: []
   },
   mutations: {
     setMinus (state) {
@@ -36,6 +37,9 @@ export default new Vuex.Store({
     setBooks (state, payload) {
       // console.log(payload)
       state.books = payload
+    },
+    setProducts (state, payload) {
+      state.products = payload
     }
   },
   actions: {
@@ -45,18 +49,56 @@ export default new Vuex.Store({
           context.commit('setTodos', res.data)
         })
     },
+    getProduct (context) {
+      return new Promise((resolve, reject) => {
+        axios.get(`${process.env.VUE_APP_BASE_URL}api/v1/books`)
+          .then((res) => {
+          // console.log(res)
+            context.commit('setProducts', res.data.result)
+            resolve(res.data.result)
+          })
+          .catch((err) => {
+            reject(err)
+          })
+      })
+    },
+    insertProduct (context, payload) {
+      return new Promise((resolve, reject) => {
+        axios.post(`${process.env.VUE_APP_BASE_URL}api/v1/books`, payload)
+          .then((res) => {
+            console.log(res)
+            resolve(res.data.result)
+          })
+          .catch((err) => {
+            reject(err)
+          })
+      })
+    },
+    editProduct (context, payload) {
+      return new Promise((resolve, reject) => {
+        axios.patch(`${process.env.VUE_APP_BASE_URL}api/v1/books/` + payload.id, payload.data)
+          .then((res) => {
+            console.log(res)
+            resolve(res.data.result)
+          })
+          .catch((err) => {
+            reject(err)
+          })
+      })
+    },
     interceptorsResponse (context) {
       axios.interceptors.response.use(function (response) {
         return response
       }, function (error) {
         console.log(error.response.data.result.message)
         if (error.response.status === 401) {
-          if (error.response.data.result.message === 'Token Invalid') {
+          console.log(error.response)
+          if (error.response.data.result.message === 'invalid token') {
             context.commit('setToken', null)
             localStorage.removeItem('token')
             router.push('/login')
             alert('maaf anda tidak boleh merubah token dengan sendirinya')
-          } else if (error.response.data.result.message === 'Token Expired') {
+          } else if (error.response.data.result.message === 'token expired') {
             context.commit('setToken', null)
             localStorage.removeItem('token')
             router.push('/login')
@@ -119,6 +161,9 @@ export default new Vuex.Store({
     },
     isLogin (state) {
       return state.token !== null
+    },
+    getProduct (state) {
+      return state.products
     },
     books (state) {
       console.log(state.books)
