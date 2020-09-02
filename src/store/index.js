@@ -50,21 +50,23 @@ export default new Vuex.Store({
         })
     },
     getProduct (context) {
+      console.log(`${process.env.VUE_APP_BASE_URL}/api/v1/books`)
       return new Promise((resolve, reject) => {
-        axios.get(`${process.env.VUE_APP_BASE_URL}api/v1/books`)
+        axios.get(`${process.env.VUE_APP_BASE_URL}/api/v1/books`)
           .then((res) => {
-          // console.log(res)
+            console.log(res)
             context.commit('setProducts', res.data.result)
             resolve(res.data.result)
           })
           .catch((err) => {
+            console.log(err)
             reject(err)
           })
       })
     },
     insertProduct (context, payload) {
       return new Promise((resolve, reject) => {
-        axios.post(`${process.env.VUE_APP_BASE_URL}api/v1/books`, payload)
+        axios.post(`${process.env.VUE_APP_BASE_URL}/api/v1/books`, payload)
           .then((res) => {
             console.log(res)
             resolve(res.data.result)
@@ -76,7 +78,7 @@ export default new Vuex.Store({
     },
     editProduct (context, payload) {
       return new Promise((resolve, reject) => {
-        axios.patch(`${process.env.VUE_APP_BASE_URL}api/v1/books/` + payload.id, payload.data)
+        axios.patch(`${process.env.VUE_APP_BASE_URL}/api/v1/books/` + payload.id, payload.data)
           .then((res) => {
             console.log(res)
             resolve(res.data.result)

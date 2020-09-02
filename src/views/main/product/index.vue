@@ -133,6 +133,7 @@ export default {
   },
   mounted () {
     this.getProduct()
+    console.log('hello ini tes')
   }
 }
 </script>
