@@ -15,7 +15,9 @@ export default new Vuex.Store({
     user: {},
     token: localStorage.getItem('token') || null,
     books: [],
-    products: []
+    products: [],
+    paginations: null,
+    carts: []
   },
   mutations: {
     setMinus (state) {
@@ -40,6 +42,25 @@ export default new Vuex.Store({
     },
     setProducts (state, payload) {
       state.products = payload
+    },
+    setPaginations (state, payload) {
+      state.paginations = payload
+    },
+    addCart (state, payload) {
+      const isCart = state.carts.find((item) => {
+        return item.id === payload.id
+      })
+      console.log(isCart)
+      if (!isCart) {
+        const item = payload
+        item.count = 1
+        state.carts.push(item)
+      } else {
+        console.log(payload.id)
+        state.carts = state.carts.filter((item) => {
+          return item.id !== payload.id
+        })
+      }
     }
   },
   actions: {
@@ -49,13 +70,27 @@ export default new Vuex.Store({
           context.commit('setTodos', res.data)
         })
     },
-    getProduct (context) {
-      console.log(`${process.env.VUE_APP_BASE_URL}/api/v1/books`)
+    // handleSearch (context, key) {
+    //   return new Promise((resolve, reject) => {
+    //     axios.get(`${process.env.VUE_APP_BASE_URL}/api/v1/books?search=${key}`)
+    //       .then((res) => {
+    //         resolve(res.data.result)
+    //         context.commit('setProducts', res.data.result)
+    //         context.commit('setPaginations', res.data.paginations)
+    //       })
+    //       .catch((err) => {
+    //         console.log(err)
+    //         reject(err)
+    //       })
+    //   })
+    // },
+    getProduct (context, payload) {
       return new Promise((resolve, reject) => {
-        axios.get(`${process.env.VUE_APP_BASE_URL}/api/v1/books`)
+        axios.get(`${process.env.VUE_APP_BASE_URL}/api/v1/books${payload || ''}`)
           .then((res) => {
             console.log(res)
             context.commit('setProducts', res.data.result)
+            context.commit('setPaginations', res.data.paginations)
             resolve(res.data.result)
           })
           .catch((err) => {
@@ -170,6 +205,15 @@ export default new Vuex.Store({
     books (state) {
       console.log(state.books)
       return state.books
+    },
+    getPage (state) {
+      return state.paginations
+    },
+    getCart (state) {
+      return state.carts
+    },
+    countCart (state) {
+      return state.carts.length
     }
   },
   modules: {

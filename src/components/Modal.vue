@@ -24,7 +24,7 @@
             </div>
             <div class="form-group">
                 <label for="formGroupExampleInput2">gambar</label>
-               <input type="file" name="image" id="" @change="handleFile"  style="display:none;">
+               <input type="file" name="image" id="" @change="handleFile">
             </div>
             <div class="form-group">
                 <label for="formGroupExampleInput2">kategori</label>
